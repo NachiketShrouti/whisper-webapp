@@ -1,0 +1,20 @@
+# Dockerfile.handler
+
+FROM python:3.10-slim
+
+# (Optional) If you need ffmpeg in your handler, uncomment:
+# RUN apt-get update \
+#  && apt-get install -y --no-install-recommends ffmpeg \
+#  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /handler
+
+# Install your handler’s Python dependencies
+COPY handler/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy in the handler code
+COPY handler/handler.py ./
+
+# Run the handler
+CMD ["python", "handler.py"]
