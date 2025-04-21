@@ -1,4 +1,4 @@
-﻿# Python
+﻿# Python cache and bytecode
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -6,10 +6,13 @@ __pycache__/
 # Virtual environments
 venv/
 
-# Whisper uploads
-uploads/
+# Whisper uploads (client‑side)
+app/uploads/
 
-# Docker artifacts
+# Environment variables
+.env
+
+# Docker artifacts & logs
 *.log
 
 # OS files

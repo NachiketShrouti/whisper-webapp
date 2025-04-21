@@ -10,28 +10,35 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy requirements and install dependencies first
-COPY requirements.txt .
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install CPU PyTorch (move before Whisper to make installation clearer)
+# Install CPU version of PyTorch (optional if not using Whisper locally)
 RUN pip install --no-cache-dir \
       torch \
       torchvision \
       torchaudio \
       --index-url https://download.pytorch.org/whl/cpu
 
-# Install Whisper from GitHub (move it last)
+# Whisper (optional if using Whisper locally; not needed if using RunPod only)
 RUN pip install --no-cache-dir git+https://github.com/openai/whisper.git
 
-# Permissions update
-RUN mkdir -p /app/uploads && chmod -R 777 /app/uploads
+# Load environment variables from .env using python-dotenv
+# Ensure .env file is copied ONLY for local use (use .dockerignore in real setup)
+COPY .env .env
 
-# Copy app code
+# Copy the actual Flask app
 COPY app ./app
+
+# Ensure upload directory exists and is writable
+RUN mkdir -p /app/app/uploads && chmod -R 777 /app/app/uploads
 
 WORKDIR /app/app
 
-# Expose port and launch Flask app
+# Flask will load .env from root automatically via python-dotenv
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=5000
+
 EXPOSE 5000
-ENV FLASK_APP=app.py
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+
+CMD ["flask", "run"]
